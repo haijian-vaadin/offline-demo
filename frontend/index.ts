@@ -1,5 +1,8 @@
+import { DeferredCallSubmitter } from '@vaadin/flow-frontend';
+import { showNotification } from '@vaadin/flow-frontend/a-notification';
 import { Flow } from '@vaadin/flow-frontend/Flow';
 import { Router } from '@vaadin/router';
+import client from './generated/connect-client.default';
 
 import './global-styles';
 
@@ -37,3 +40,28 @@ const routes = [
 
 export const router = new Router(document.querySelector('#outlet'));
 router.setRoutes(routes);
+
+client.deferredCallHandler = {
+  async handleDeferredCallSubmission(deferredCallSubmitter: DeferredCallSubmitter){
+    try{
+      // Submit the deferred call and wait for it to finish
+      await deferredCallSubmitter.submit();
+       // Notify the user of successful result
+			showNotification('Offline form submitted successfully.', {position: 'bottom-start'});
+    }catch(error){
+      // Notify the user of the error
+      showNotification('Failed to submit offline form.', {position: 'bottom-start'});
+      // The call will be removed from the deferred queue
+      // when sent successfully or if the error is handled here.
+      // To keep the call in the queue, call the 
+      // keepDeferredCallInTheQueue() method.
+      deferredCallSubmitter.keepDeferredCallInTheQueue();
+    }
+  }
+}
+
+// Send the deferred calls when application is opened in the browser. When
+// the `deferredCallHandler` callback is used, make sure it is defined before this.
+if (navigator.onLine) {
+  client.submitDeferredCalls();
+}
