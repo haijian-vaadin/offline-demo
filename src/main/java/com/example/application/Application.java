@@ -15,7 +15,8 @@ import org.vaadin.artur.helpers.LaunchUtil;
  *
  */
 @SpringBootApplication
-@PWA(name = "offline-demo", shortName = "offline-demo")
+@PWA(name = "offline-demo", shortName = "offline-demo", 
+    offlineResources = {"images/img_chania.jpg", "images/logo.png", "images/user.svg"})
 public class Application extends SpringBootServletInitializer implements AppShellConfigurator {
 
     public static void main(String[] args) {
